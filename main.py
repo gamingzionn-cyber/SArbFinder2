@@ -3,6 +3,8 @@ eventlet.monkey_patch()
 import os
 import time
 import threading
+import logging
+logging.basicConfig(level=logging.INFO)
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 from odds_api import get_live_odds
