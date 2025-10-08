@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sports Arbitrage Finder (Live)</title>
+  <style>
+    body { font-family: Arial; background: #f2f2f2; }
+    .arb { background: white; padding: 10px; margin: 10px; border-radius: 6px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+  </style>
+</head>
+<body>
+  <h1>⚡ Live Sports Arbitrage Opportunities</h1>
+  <div id="arbs"></div>
+
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <script>
+    const socket = io();
+
+    socket.on('connect', () => console.log('Connected to server'));
+
+    socket.on('arbitrage_update', data => {
+      const container = document.getElementById('arbs');
+      container.innerHTML = '';
+      const arbs = data.arbs || [];
+
+      if (arbs.length === 0) {
+        container.innerHTML = '<p>No arbitrage opportunities right now.</p>';
+        return;
+      }
+
+      arbs.forEach(arb => {
+        const div = document.createElement('div');
+        div.className = 'arb';
+        div.innerHTML = `
+          <strong>${arb.match}</strong><br>
+          Profit: ${arb.profit_%}%<br>
+          ${Object.entries(arb.books)
+            .map(([outcome, b]) => `${outcome}: ${b.odds} (${b.book})`)
+            .join('<br>')}
+        `;
+        container.appendChild(div);
+      });
+    });
+  </script>
+</body>
+</html>
