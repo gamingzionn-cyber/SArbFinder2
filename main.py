@@ -29,10 +29,10 @@ def fetch_and_emit_arbs():
             if arbs != latest_arbs:  # only emit when new data
                 latest_arbs = arbs
                 socketio.emit('arbitrage_update', {'arbs': arbs})
-            time.sleep(15)  # fetch every 15 seconds
+            socketio.sleep(15)  # fetch every 15 seconds
         except Exception as e:
             print("Error:", e)
-            time.sleep(30)
+            socketio.sleep(30)
 
 @socketio.on('connect')
 def handle_connect():
@@ -40,9 +40,6 @@ def handle_connect():
     socketio.emit('arbitrage_update', {'arbs': latest_arbs})
 
 if __name__ == '__main__':
-    # Start background thread
-    thread = threading.Thread(target=fetch_and_emit_arbs)
-    thread.daemon = True
-    thread.start()
-
+    socketio.start_background_task(fetch_and_emit_arbs)
+    logging.info("Flask-SocketIO server starting...")
     socketio.run(app, host='0.0.0.0', port=5000)
