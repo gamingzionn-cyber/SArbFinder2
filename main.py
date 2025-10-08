@@ -20,6 +20,7 @@ def index():
     return render_template('index.html')
 
 def fetch_and_emit_arbs():
+    logging.info("Background arbitrage thread started.")
     global latest_arbs
     while True:
         try:
